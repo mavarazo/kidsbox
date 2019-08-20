@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block app_content %}
+
+<table class="table table-hover">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for tag in tags %}
+    <tr>
+        <td>{{ tag.name or '' }}</td>
+        <td>Play</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
