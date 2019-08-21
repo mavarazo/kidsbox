@@ -13,7 +13,7 @@
     {% for tag in tags %}
     <tr>
         <td>{{ tag.name or '' }}</td>
-        <td>Play</td>
+        <td><a href="{{ url_for('tags.play', id=tag.id) }}">Play</a></td>
     </tr>
     {% endfor %}
     </tbody>

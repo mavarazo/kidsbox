@@ -1,7 +1,7 @@
-from flask import render_template, request, abort, flash, url_for
+from flask import render_template, request, abort, flash, url_for, jsonify
 from werkzeug.utils import redirect
 
-from app import db
+from app import db, mpd
 from app.models import Tag
 from app.schemas import tag_schema
 from app.tags import bp
@@ -14,7 +14,7 @@ def index():
     return render_template('tags/index.html', title='Tags', tags=Tag.query.order_by(Tag.id).all())
 
 
-@bp.route('/tags/<id>/edit', methods=['GET', 'POST'])
+@bp.route('/tags/<int:id>/edit', methods=['GET', 'POST'])
 def edit(id):
     tag = Tag.query.filter_by(id=id).first_or_404()
     form = TagForm(obj=tag)
@@ -46,3 +46,16 @@ def store_uid():
     db.session.add(tag)
     db.session.commit()
     return tag_schema.jsonify(tag)
+
+
+@bp.route('/tags/api/<int:id>/play', methods=['GET'])
+def play(id):
+    tag = Tag.query.filter_by(id=id).first_or_404()
+
+    mpd.connect('localhost', 6600)
+    mpd.clear()
+    mpd.add('Schwiizergoofe 6')
+    print(mpd.playlist())
+    mpd.next()
+    return jsonify({'currentsong': mpd.currentsong()})
+

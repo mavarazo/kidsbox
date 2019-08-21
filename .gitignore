@@ -2,6 +2,7 @@
 app.db
 logs/
 migrations/
+Kinderlieder/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
