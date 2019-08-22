@@ -11,11 +11,13 @@ from mpd import MPDClient
 
 from config import Config
 
+
 db = SQLAlchemy()
 migrate = Migrate()
 bootstrap = Bootstrap()
 ma = Marshmallow()
 mpd = MPDClient()
+
 
 def create_app(config_class=Config):
     app = Flask(__name__)

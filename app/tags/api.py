@@ -1,6 +1,6 @@
 from socket import error as SocketError
 
-from flask import request, abort, jsonify
+from flask import request, abort, jsonify, current_app
 
 from app import db, mpd
 from app.models import Tag
@@ -8,8 +8,8 @@ from app.schemas import tag_schema
 from app.tags import bp
 
 
-def mpd_command(command = None, args = None):
-    mpd.connect('localhost', 6600)
+def mpd_command(command=None, args=None):
+    mpd.connect(current_app.config["MPD_HOST"], current_app.config["MPD_PORT"])
 
     if 'play' == command:
         mpd.clear()
@@ -24,9 +24,13 @@ def mpd_command(command = None, args = None):
     elif 'prev' == command:
         mpd.previous()
 
-    mpd_status = mpd.status()
+    response = mpd.status()
+
+    if 'currentsong' == command:
+        response = mpd.currentsong()
+
     mpd.disconnect()
-    return mpd_status
+    return response
 
 
 @bp.route('/tags/api/<uid>', methods=['GET'])
@@ -49,6 +53,12 @@ def store_uid():
 @bp.route('/tags/api/status', methods=['GET'])
 def status():
     mpd_status = mpd_command()
+    return jsonify({'status': mpd_status})
+
+
+@bp.route('/tags/api/currentsong', methods=['GET'])
+def currentsong():
+    mpd_status = mpd_command('currentsong')
     return jsonify({'status': mpd_status})
 
 
@@ -77,7 +87,7 @@ def next():
     return jsonify({'status': mpd_status})
 
 
-@bp.route('/tags/api/next', methods=['GET'])
+@bp.route('/tags/api/prev', methods=['GET'])
 def prev():
     mpd_status = mpd_command('prev')
     return jsonify({'status': mpd_status})

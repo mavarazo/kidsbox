@@ -12,3 +12,4 @@ class Config(object):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     MPD_HOST = 'localhost'
     MPD_PORT = 6600
+    MPD_MUSIC = '/Users/marco.niederberger/.mpd/music'

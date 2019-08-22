@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block app_content %}
+<p id="album"/>
+<p id="title"/>
 
 <table class="table table-hover">
     <thead>
@@ -18,5 +20,32 @@
     {% endfor %}
     </tbody>
 </table>
+{% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script>
+$(document).ready(function(){
+    setTimeout(getCurrentPlaying,5000);
+});
+
+function getCurrentPlaying() {
+    $.ajax({
+        url: "/tags/api/currentsong",
+        type: "GET",
+        success: function(data) {
+            $('#album').html(data.status.album);
+            $('#title').html(data.status.title);
+        },
+        complete:function(data) {
+            setTimeout(getCurrentPlaying,5000);
+        }
+    });
+}
+
+
+
+
+
+</script>
 {% endblock %}
