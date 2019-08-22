@@ -1,8 +1,20 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<p id="album"/>
-<p id="title"/>
+<div id="status" class="panel panel-success text-center">
+    <div class="panel-heading">
+        <h2 id="currentsong">...</h2>
+    </div>
+    <div class="panel-body">
+        <a id="prev" href="#">Prev</a>
+        /
+        <a id="pause" href="#">Pause</a>
+        /
+        <a id="stop" href="#">Stop</a>
+        /
+        <a id="next" href="#">Next</a>
+    </div>
+</div>
 
 <table class="table table-hover">
     <thead>
@@ -15,7 +27,7 @@
     {% for tag in tags %}
     <tr>
         <td>{{ tag.name or '' }}</td>
-        <td><a href="{{ url_for('tags.play', id=tag.id) }}">Play</a></td>
+        <td><a id="play" href="#" data-tag="{{ tag.id }}">Play</a></td>
     </tr>
     {% endfor %}
     </tbody>
@@ -26,7 +38,7 @@
 {{ super() }}
 <script>
 $(document).ready(function(){
-    setTimeout(getCurrentPlaying,5000);
+    getCurrentPlaying();
 });
 
 function getCurrentPlaying() {
@@ -34,14 +46,104 @@ function getCurrentPlaying() {
         url: "/tags/api/currentsong",
         type: "GET",
         success: function(data) {
-            $('#album').html(data.status.album);
-            $('#title').html(data.status.title);
+            updateStatus(data.status);
         },
         complete:function(data) {
             setTimeout(getCurrentPlaying,5000);
         }
     });
 }
+
+function updateStatus(status) {
+    var x = document.getElementById("status");
+    if (jQuery.isEmptyObject(status)) {
+        x.style.display = "none";
+    } else {
+        x.style.display = "block";
+        $('#currentsong').html(status.album + " - " + status.title)
+    }
+}
+
+$('#play').click(function(){
+    var id = $(this).data('tag');
+    play(id);
+    return false;
+});
+
+function play(id) {
+    $.ajax({
+        url : "/tags/api/" + id + "/play",
+        type: "GET",
+        success: function(data) {
+            updateStatus(data.status);
+        }
+    });
+}
+
+$('#pause').click(function(){
+    pause();
+    return false;
+});
+
+function pause() {
+    $.ajax({
+        url : "/tags/api/pause",
+        type: "GET",
+        success: function(data) {
+            updateStatus(data.status);
+        }
+    });
+}
+
+$('#stop').click(function(){
+    stop();
+    return false;
+});
+
+function stop() {
+    $.ajax({
+        url : "/tags/api/stop",
+        type: "GET",
+        success: function(data) {
+            updateStatus(data.status);
+        }
+    });
+}
+
+$('#next').click(function(){
+    next();
+    return false;
+});
+
+function next() {
+    $.ajax({
+        url : "/tags/api/next",
+        type: "GET",
+        success: function(data) {
+            updateStatus(data.status);
+        }
+    });
+}
+
+$('#prev').click(function(){
+    prev();
+    return false;
+});
+
+function prev() {
+    $.ajax({
+        url : "/tags/api/prev",
+        type: "GET",
+        success: function(data) {
+            updateStatus(data.status);
+        }
+    });
+}
+
+
+
+
+
 
 
 

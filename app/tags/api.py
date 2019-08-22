@@ -9,7 +9,10 @@ from app.tags import bp
 
 
 def mpd_command(command=None, args=None):
-    mpd.connect(current_app.config["MPD_HOST"], current_app.config["MPD_PORT"])
+    try:
+        mpd.connect(current_app.config["MPD_HOST"], current_app.config["MPD_PORT"])
+    except:
+        return 'could not establish connection to mpd'
 
     if 'play' == command:
         mpd.clear()
@@ -18,6 +21,7 @@ def mpd_command(command=None, args=None):
     elif 'pause' == command:
         mpd.pause()
     elif 'stop' == command:
+        mpd.clear()
         mpd.stop()
     elif 'next' == command:
         mpd.next()
