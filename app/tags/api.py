@@ -73,6 +73,13 @@ def play(id):
     return jsonify({'status': mpd_status})
 
 
+@bp.route('/tags/api/<uid>/play', methods=['GET'])
+def play_by_uid(uid):
+    tag = Tag.query.filter_by(uid=uid).first_or_404()
+    mpd_status = mpd_command('play', tag.path)
+    return jsonify({'status': mpd_status})
+
+
 @bp.route('/tags/api/pause', methods=['GET'])
 def pause():
     mpd_status = mpd_command('pause')
