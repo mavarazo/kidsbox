@@ -27,7 +27,7 @@
     {% for tag in tags %}
     <tr>
         <td>{{ tag.name or '' }}</td>
-        <td><a id="play" href="#" data-tag="{{ tag.id }}">Play</a></td>
+        <td><a id="play" href="#" data-tag="{{ tag.uid }}">Play</a></td>
     </tr>
     {% endfor %}
     </tbody>
@@ -65,14 +65,14 @@ function updateStatus(status) {
 }
 
 $('#play').click(function(){
-    var id = $(this).data('tag');
+    var uid = $(this).data('tag');
     play(id);
     return false;
 });
 
-function play(id) {
+function play(uid) {
     $.ajax({
-        url : "/tags/api/" + id + "/play",
+        url : "/tags/api/" + uid + "/play",
         type: "GET",
         success: function(data) {
             updateStatus(data.status);
