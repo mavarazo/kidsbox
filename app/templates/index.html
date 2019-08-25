@@ -6,13 +6,19 @@
         <h2 id="currentsong">...</h2>
     </div>
     <div class="panel-body">
-        <a id="prev" href="#">Prev</a>
-        /
-        <a id="pause" href="#">Pause</a>
-        /
-        <a id="stop" href="#">Stop</a>
-        /
-        <a id="next" href="#">Next</a>
+        <a id="prev" class="btn btn-default" href="#">
+            <span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span>
+        </a>
+        <a id="pause" class="btn btn-default" href="#">
+            <span id="pause-icon" class="glyphicon glyphicon-pause" aria-hidden="true"></span>
+
+        </a>
+        <a id="stop" class="btn btn-default" href="#">
+            <span class="glyphicon glyphicon-stop" aria-hidden="true"></span>
+        </a>
+        <a id="next" class="btn btn-default" href="#">
+            <span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span>
+        </a>
     </div>
 </div>
 
@@ -27,7 +33,9 @@
     {% for tag in tags %}
     <tr>
         <td>{{ tag.name or '' }}</td>
-        <td><a id="play" href="#" data-tag="{{ tag.uid }}">Play</a></td>
+        <td><a id="play" class="btn btn-primary" href="#" data-tag="{{ tag.uid }}">
+            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+        </a></td>
     </tr>
     {% endfor %}
     </tbody>
@@ -90,10 +98,12 @@ function pause() {
         type: "GET",
         success: function(data) {
             updateStatus(data.status);
-            if ($("#pause").text() == 'Pause') {
-                $("#pause").text("Play");
+            if ($("#pause-icon").hasClass('glyphicon-pause')) {
+                $("#pause-icon").removeClass("glyphicon-pause");
+                $("#pause-icon").addClass("glyphicon-play");
             } else {
-                $("#pause").text("Pause");
+                $("#pause-icon").removeClass("glyphicon-play");
+                $("#pause-icon").addClass("glyphicon-pause");
             }
         }
     });
@@ -143,6 +153,11 @@ function prev() {
         }
     });
 }
+
+
+
+
+
 
 
 

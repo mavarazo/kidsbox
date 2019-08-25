@@ -38,3 +38,11 @@ def edit(id):
         return redirect(url_for('tags.index'))
 
     return render_template('tags/edit.html', title='Tags', form=form)
+
+
+@bp.route('/tags/<int:id>/delete', methods=['GET'])
+def delete(id):
+    tag = Tag.query.filter_by(id=id).first_or_404()
+    db.session.delete(tag)
+    db.session.commit()
+    return redirect(url_for('tags.index'))
