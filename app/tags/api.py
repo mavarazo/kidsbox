@@ -28,10 +28,10 @@ def mpd_command(command=None, args=None):
     elif 'prev' == command:
         mpd.previous()
 
-    response = mpd.status()
+    response = mpd.currentsong()
 
-    if 'currentsong' == command:
-        response = mpd.currentsong()
+    if 'status' == command:
+        response = mpd.status()
 
     mpd.disconnect()
     return response
@@ -56,7 +56,7 @@ def store_uid():
 
 @bp.route('/tags/api/status', methods=['GET'])
 def status():
-    mpd_status = mpd_command()
+    mpd_status = mpd_command('status')
     return jsonify({'status': mpd_status})
 
 

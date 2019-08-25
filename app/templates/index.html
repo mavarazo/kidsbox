@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div id="status" class="panel panel-success text-center">
+<div id="status" class="panel panel-success text-center hidden">
     <div class="panel-heading">
         <h2 id="currentsong">...</h2>
     </div>
@@ -41,6 +41,15 @@ $(document).ready(function(){
     getCurrentPlaying();
 });
 
+function updateStatus(status) {
+    if (jQuery.isEmptyObject(status)) {
+        $("#status").addClass('hidden')
+    } else {
+        $("#status").removeClass('hidden');
+        $('#currentsong').html(status.album + " - " + status.title)
+    }
+}
+
 function getCurrentPlaying() {
     $.ajax({
         url: "/tags/api/currentsong",
@@ -54,19 +63,9 @@ function getCurrentPlaying() {
     });
 }
 
-function updateStatus(status) {
-    var x = document.getElementById("status");
-    if (jQuery.isEmptyObject(status)) {
-        x.style.display = "none";
-    } else {
-        x.style.display = "block";
-        $('#currentsong').html(status.album + " - " + status.title)
-    }
-}
-
 $('#play').click(function(){
     var uid = $(this).data('tag');
-    play(id);
+    play(uid);
     return false;
 });
 
@@ -91,6 +90,11 @@ function pause() {
         type: "GET",
         success: function(data) {
             updateStatus(data.status);
+            if ($("#pause").text() == 'Pause') {
+                $("#pause").text("Play");
+            } else {
+                $("#pause").text("Pause");
+            }
         }
     });
 }
