@@ -71,9 +71,7 @@ function getCurrentPlaying() {
             }
         },
         success: function(data) {
-            if (data.response == 'success') {
-                updateStatus(data.status);
-            }
+            updateStatus(data.status);
         },
         complete:function(data) {
             setTimeout(getCurrentPlaying,5000);
