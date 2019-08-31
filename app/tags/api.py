@@ -1,4 +1,4 @@
-from flask import request, abort, jsonify, current_app
+from flask import request, jsonify, current_app
 
 from app import db, mpd
 from app.errors.handlers import api_error_response
@@ -11,7 +11,7 @@ def mpd_command(command=None, args=None):
     try:
         mpd.connect(current_app.config["MPD_HOST"], current_app.config["MPD_PORT"])
     except:
-        return 'could not establish connection to mpd'
+        return api_error_response(500, "could not establish connection to mpd")
 
     if 'play' == command:
         mpd.clear()
@@ -33,7 +33,7 @@ def mpd_command(command=None, args=None):
         response = mpd.status()
 
     mpd.disconnect()
-    return response
+    return jsonify({'status': response})
 
 
 @bp.route('/tags/api/<uid>', methods=['GET'])
@@ -55,14 +55,12 @@ def store_uid():
 
 @bp.route('/tags/api/status', methods=['GET'])
 def status():
-    mpd_status = mpd_command('status')
-    return jsonify({'status': mpd_status})
+    return mpd_command('status')
 
 
 @bp.route('/tags/api/currentsong', methods=['GET'])
 def currentsong():
-    mpd_status = mpd_command('currentsong')
-    return jsonify({'status': mpd_status})
+    return mpd_command('currentsong')
 
 
 @bp.route('/tags/api/play/<uid>', methods=['GET'])
@@ -71,30 +69,24 @@ def play_by_uid(uid):
     if tag.path is None:
         return api_error_response(400, "'" + uid + "' not assigned")
 
-    mpd_status = mpd_command('play', tag.path)
-    return jsonify({'status': mpd_status})
+    return mpd_command('play', tag.path)
 
 
 @bp.route('/tags/api/pause', methods=['GET'])
 def pause():
-    mpd_status = mpd_command('pause')
-    return jsonify({'status': mpd_status})
+    return mpd_command('pause')
 
 
 @bp.route('/tags/api/stop', methods=['GET'])
 def stop():
-    mpd_status = mpd_command('stop')
-    return jsonify({'status': mpd_status})
+    return mpd_command('stop')
 
 
 @bp.route('/tags/api/next', methods=['GET'])
 def next():
-    mpd_status = mpd_command('next')
-    return jsonify({'status': mpd_status})
+    return mpd_command('next')
 
 
 @bp.route('/tags/api/prev', methods=['GET'])
 def prev():
-    mpd_status = mpd_command('prev')
-    return jsonify({'status': mpd_status})
-
+    return mpd_command('prev')
