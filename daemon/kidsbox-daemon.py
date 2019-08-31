@@ -11,8 +11,7 @@ import time
 import MFRC522
 
 # Logging
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+logging.basicConfig(filename=kidsbox-daemon.log, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # API
 BASE_URL = 'http://localhost:8001/tags/api/'
@@ -29,7 +28,7 @@ def tag_with_uid_registered(uid):
           time.sleep(10)
           continue
 
-    logger.info(r.text)
+    logging.info(r.text)
     if r.status_code == 200:
         return True
     return False
@@ -40,16 +39,17 @@ def create_tag(uid):
     payload = "{\"uid\": \"" + uid + "\"}"
     headers = {'content-type': 'application/json'}
     r = requests.request("POST", url, data=payload, headers=headers)
-    logger.info(r.text)
+    logging.info(r.text)
     if r.status_code == 200:
         return True
     elif r.status_code == 404:
         return False
 
+
 def play_by_uid(uid):
-    url = BASE_URL + uid + '/play'
+    url = BASE_URL + '/play' + uid
     r = requests.get(url)
-    logger.info(r.text)
+    logging.info(r.text)
     if r.status_code == 200:
         return True
     elif r.status_code == 404:
@@ -80,7 +80,7 @@ while continue_reading:
 
     # If a card is found
     if status == MIFAREReader.MI_OK:
-        logger.info("Card detected")
+        logging.info("Card detected")
 
     # Get the UID of the card
     (status, uid) = MIFAREReader.MFRC522_Anticoll()
@@ -90,7 +90,7 @@ while continue_reading:
         uid_str = values = ':'.join(str(v) for v in uid)
 
         # Print UID
-        logger.info("Card read UID: " + uid_str)
+        logging.info("Card read UID: " + uid_str)
 
         try:
             if tag_with_uid_registered(uid_str):
@@ -100,4 +100,4 @@ while continue_reading:
                 create_tag(uid_str)
                 time.sleep(10)
         except Exception as e:
-            logger.error(e)
+            logging.error(e)

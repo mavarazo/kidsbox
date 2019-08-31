@@ -66,9 +66,12 @@ def currentsong():
     return jsonify({'status': mpd_status})
 
 
-@bp.route('/tags/api/<uid>/play', methods=['GET'])
+@bp.route('/tags/api/play/<uid>', methods=['GET'])
 def play_by_uid(uid):
     tag = Tag.query.filter_by(uid=uid).first_or_404()
+    if tag.path is None:
+        return jsonify({'status': 'no path to play'})
+
     mpd_status = mpd_command('play', tag.path)
     return jsonify({'status': mpd_status})
 
