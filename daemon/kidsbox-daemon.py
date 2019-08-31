@@ -11,7 +11,7 @@ import time
 import MFRC522
 
 # Logging
-logging.basicConfig(filename=kidsbox-daemon.log, filemode='w', format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # API
 BASE_URL = 'http://localhost:8001/tags/api/'
