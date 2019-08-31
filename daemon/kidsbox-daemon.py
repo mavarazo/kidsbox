@@ -47,7 +47,7 @@ def create_tag(uid):
 
 
 def play_by_uid(uid):
-    url = BASE_URL + '/play' + uid
+    url = BASE_URL + '/play/' + uid
     r = requests.get(url)
     logging.info(r.text)
     if r.status_code == 200:
