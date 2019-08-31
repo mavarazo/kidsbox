@@ -39,14 +39,21 @@ def mpd_command(command=None, args=None):
 
 @bp.route('/tags/api/<uid>', methods=['GET'])
 def find_by_uid(uid):
-    tag = Tag.query.filter_by(uid=uid).first_or_404()
+    tag = Tag.query.filter_by(uid=uid).first()
+    if tag is None:
+        response = jsonify({'error': "'" + uid + "' not fond"})
+        response.status_code = 404
+        return response
+
     return tag_schema.jsonify(tag)
 
 
 @bp.route('/tags/api/', methods=['POST'])
 def store_uid():
     if not request.json or 'uid' not in request.json:
-        abort(400)
+        response = jsonify({'error': "UID is mandatory"})
+        response.status_code = 400
+        return response
 
     tag = Tag(uid=request.json.get('uid'))
     db.session.add(tag)
@@ -68,9 +75,17 @@ def currentsong():
 
 @bp.route('/tags/api/play/<uid>', methods=['GET'])
 def play_by_uid(uid):
-    tag = Tag.query.filter_by(uid=uid).first_or_404()
+    tag = Tag.query.filter_by(uid=uid).first()
+
+    if tag is None:
+        response = jsonify({'error': "'" + uid + "' not fond"})
+        response.status_code = 404
+        return response
+
     if tag.path is None:
-        return jsonify({'status': 'no path to play'})
+        response = jsonify({'status': "'" + uid + "' not assigned"})
+        response.status_code = 404
+        return response
 
     mpd_status = mpd_command('play', tag.path)
     return jsonify({'status': mpd_status})
