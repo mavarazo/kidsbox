@@ -1,8 +1,7 @@
-from socket import error as SocketError
-
 from flask import request, abort, jsonify, current_app
 
 from app import db, mpd
+from app.errors.handlers import api_error_response
 from app.models import Tag
 from app.schemas import tag_schema
 from app.tags import bp
@@ -39,21 +38,14 @@ def mpd_command(command=None, args=None):
 
 @bp.route('/tags/api/<uid>', methods=['GET'])
 def find_by_uid(uid):
-    tag = Tag.query.filter_by(uid=uid).first()
-    if tag is None:
-        response = jsonify({'error': "'" + uid + "' not fond"})
-        response.status_code = 404
-        return response
-
+    tag = Tag.query.filter_by(uid=uid).first_or_404()
     return tag_schema.jsonify(tag)
 
 
 @bp.route('/tags/api/', methods=['POST'])
 def store_uid():
     if not request.json or 'uid' not in request.json:
-        response = jsonify({'error': "UID is mandatory"})
-        response.status_code = 400
-        return response
+        return api_error_response(400, "'UID' is mandatory")
 
     tag = Tag(uid=request.json.get('uid'))
     db.session.add(tag)
@@ -75,17 +67,9 @@ def currentsong():
 
 @bp.route('/tags/api/play/<uid>', methods=['GET'])
 def play_by_uid(uid):
-    tag = Tag.query.filter_by(uid=uid).first()
-
-    if tag is None:
-        response = jsonify({'error': "'" + uid + "' not fond"})
-        response.status_code = 404
-        return response
-
+    tag = Tag.query.filter_by(uid=uid).first_or_404()
     if tag.path is None:
-        response = jsonify({'status': "'" + uid + "' not assigned"})
-        response.status_code = 404
-        return response
+        return api_error_response(400, "'" + uid + "' not assigned")
 
     mpd_status = mpd_command('play', tag.path)
     return jsonify({'status': mpd_status})
