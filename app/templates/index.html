@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block app_content %}
-<div id="status" class="panel panel-success text-center hidden">
+<div id="control" class="panel panel-success text-center hidden">
     <div class="panel-heading">
         <h2 id="currentsong">...</h2>
     </div>
@@ -33,7 +33,7 @@
     {% for tag in tags %}
     <tr>
         <td>{{ tag.name or '' }}</td>
-        <td><a id="play" class="btn btn-primary" href="#" data-tag="{{ tag.uid }}">
+        <td><a class="btn btn-primary play" href="#" data-tag="{{ tag.uid }}">
             <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
         </a></td>
     </tr>
@@ -51,10 +51,10 @@ $(document).ready(function(){
 
 function updateStatus(status) {
     if (jQuery.isEmptyObject(status)) {
-        $("#status").addClass('hidden')
+        $("#control").addClass('hidden')
     } else {
-        $("#status").removeClass('hidden');
-        $('#currentsong').html(status.album + " - " + status.title)
+        $("#control").removeClass('hidden');
+        $('#currentsong').html(status.album + " - " + status.title);
     }
 }
 
@@ -62,8 +62,18 @@ function getCurrentPlaying() {
     $.ajax({
         url: "/tags/api/currentsong",
         type: "GET",
+        statusCode: {
+            404: function(response) {
+                console.log('ajax.statusCode: 404');
+            },
+            500: function(response) {
+                console.log('ajax.statusCode: 500');
+            }
+        },
         success: function(data) {
-            updateStatus(data.status);
+            if (data.response == 'success') {
+                updateStatus(data.status);
+            }
         },
         complete:function(data) {
             setTimeout(getCurrentPlaying,5000);
@@ -71,7 +81,7 @@ function getCurrentPlaying() {
     });
 }
 
-$('#play').click(function(){
+$('.play').click(function(){
     var uid = $(this).data('tag');
     play(uid);
     return false;
@@ -153,6 +163,7 @@ function prev() {
         }
     });
 }
+
 
 
 
