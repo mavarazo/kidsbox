@@ -14,20 +14,12 @@ import MFRC522
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 # API
-BASE_URL = 'http://localhost:8001/tags/api/'
+BASE_URL = 'http://localhost/tags/api/'
 
 
 def tag_with_uid_registered(uid):
     url = BASE_URL + uid
-    r = None
-    while r is None:
-       try:
-          r = requests.get(url)
-          break
-       except:
-          time.sleep(10)
-          continue
-
+    r = r = requests.get(url)
     logging.info(r.url + " - " + r.text)
     if r.status_code == 200:
         return True
