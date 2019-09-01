@@ -28,7 +28,7 @@ def tag_with_uid_registered(uid):
           time.sleep(10)
           continue
 
-    logging.info(r.text)
+    logging.info(r.url + " - " + r.text)
     if r.status_code == 200:
         return True
     return False
@@ -39,7 +39,7 @@ def create_tag(uid):
     payload = "{\"uid\": \"" + uid + "\"}"
     headers = {'content-type': 'application/json'}
     r = requests.request("POST", url, data=payload, headers=headers)
-    logging.info(r.text)
+    logging.info(r.url + " - " + r.text)
     if r.status_code == 200:
         return True
     elif r.status_code == 404:
@@ -49,7 +49,7 @@ def create_tag(uid):
 def play_by_uid(uid):
     url = BASE_URL + '/play/' + uid
     r = requests.get(url)
-    logging.info(r.text)
+    logging.info(r.url + " - " + r.text)
     if r.status_code == 200:
         return True
     elif r.status_code == 404:
