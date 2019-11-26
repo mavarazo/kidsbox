@@ -185,6 +185,20 @@ $ sudo ln -s /etc/nginx/sites-available/kidsbox /etc/nginx/sites-enabled/
 $ sudo systemctl reload nginx
 ```
 
+Database
+```
+$ source venv/bin/activate
+$ flask db init
+$ flask db migrate -m "tags table"
+$ flask db upgrade
+$ deactivate
+```
+
+```
+$ sudo usermod -aG audio www-data
+$ cat /etc/group | grep audio
+````
+
 
 
 
