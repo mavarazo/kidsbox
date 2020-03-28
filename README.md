@@ -27,13 +27,6 @@ network={
 
 ```
 
-### Enable SPI
-```
-$ sudo cat /boot/config.txt
-...
-device_tree_param=spi=on
-dtoverlay=spi-bcm2708
-```
 
 ### Some Settings:
 ```
@@ -51,10 +44,25 @@ $ sudo raspi-config
 	1. P2: SSH should already be activated
 	2. P4: SPI enable
 
+Check if SPI is loaded after reboot:
+````
+$ lsmod | grep spi
+````
+
+
 Get the updates:
 ```
 $ sudo apt update && sudo apt upgrade
 ```
+
+
+## MFRC522
+```
+$ sudo apt-get install python3-dev python3-pip
+$ sudo pip3 install spidev
+$ sudo pip3 install mfrc522
+```
+
 
 ## MPD
 ```
@@ -79,6 +87,12 @@ Finally restart mpd
 $ sudo /etc/init.d/mpd restart
 ````
 
+Assign www-data to audio-group:
+```
+$ sudo usermod -aG audio www-data
+$ cat /etc/group | grep audio
+````
+
 ## Kidsbox
 ```
 $ sudo apt install git
@@ -87,6 +101,22 @@ $ git clone https://github.com/mavarazo/kidsbox
 Copy project files to www folder
 ```
 $ sudo cp -r ~/kidsbox /var/www/
+````
+
+```
+$ cd /var/www/kidsbox
+$ sudo virtualenv -p python3 venv
+$ source venv/bin/activate
+$ sudo pip3 install -r requirements.txt
+$ sudo pip3 install gunicorn
+$ flask db init
+$ flask db migrate -m "tags table"
+$ flask db upgrade
+$ deactivate 
+````
+
+```
+sudo chown -R www-data:www-data /var/www/kidsbox
 ````
 
 Create a shell script for supervisor daemon to start the flask app:
@@ -100,31 +130,11 @@ deactivate
 $ sudo chmod 744 /var/www/kidsbox/start.sh
 ```
 
-### Nginx
-````
-$ sudo apt update
-$ sudo apt install nginx
-````
-
 ### Supervisor
 ```
 $ sudo apt update
 $ sudo apt install supervisor
 ```
-
-### Setup
-```
-$ cd /var/www/kidsbox
-$ sudo virtualenv -p python3 venv
-$ source venv/bin/activate
-$ sudo pip3 install -r requirements.txt
-$ sudo pip3 install gunicorn
-$ deactivate 
-````
-
-```
-sudo chown -R www-data:www-data /var/www/kidsbox
-````
 
 ```
 sudo cat /etc/supervisor/conf.d/kidsbox.conf
@@ -161,6 +171,12 @@ Check if everything is up and running:
 $ sudo supervisorctl
 ```
 
+### Nginx
+````
+$ sudo apt update
+$ sudo apt install nginx
+````
+
 Nginx config:
 ```
 sudo cat /etc/nginx/sites-available/kidsbox
@@ -181,25 +197,8 @@ server {
         	proxy_pass http://unix:/var/www/kidsbox/kidsbox.sock;
     	}
 }
+
+$ sudo rm /etc/nginx/sites-enabled/default
 $ sudo ln -s /etc/nginx/sites-available/kidsbox /etc/nginx/sites-enabled/
 $ sudo systemctl reload nginx
 ```
-
-Database
-```
-$ source venv/bin/activate
-$ flask db init
-$ flask db migrate -m "tags table"
-$ flask db upgrade
-$ deactivate
-```
-
-```
-$ sudo usermod -aG audio www-data
-$ cat /etc/group | grep audio
-````
-
-
-
-
-
