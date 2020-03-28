@@ -7,6 +7,7 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
+from flask_uploads import UploadSet, configure_uploads
 from mpd import MPDClient
 
 from config import Config
@@ -28,6 +29,9 @@ def create_app(config_class=Config):
     bootstrap.init_app(app)
     ma.init_app(app)
 
+    music_set = UploadSet('music', ('mp3'))
+    configure_uploads(app, music_set)
+
     mpd.timeout = 10
     mpd.idletimeout = None
 
@@ -39,6 +43,9 @@ def create_app(config_class=Config):
 
     from app.tags import bp as tags_bp
     app.register_blueprint(tags_bp)
+
+    from app.upload import bp as upload_bp
+    app.register_blueprint(upload_bp)
 
     if not app.debug and not app.testing:
         if not os.path.exists('logs'):

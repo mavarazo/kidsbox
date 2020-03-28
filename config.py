@@ -13,3 +13,6 @@ class Config(object):
     MPD_HOST = 'localhost'
     MPD_PORT = 6600
     MPD_MUSIC = '/Users/marco.niederberger/.mpd/music'
+    # Uploads
+    UPLOADS_DEFAULT_DEST = basedir + 'music'
+
