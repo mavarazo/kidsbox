@@ -56,11 +56,12 @@ try:
         logging.info(f"Card read {id}, {text}")
 
         try:
-            if tag_with_uid_registered(id):
-                play_by_uid(id)
+            str_id = str(id)
+            if tag_with_uid_registered(str_id):
+                play_by_uid(str_id)
                 time.sleep(10)
             else:
-                create_tag(id)
+                create_tag(str_id)
                 time.sleep(10)
         except Exception as e:
             logging.error(e)
