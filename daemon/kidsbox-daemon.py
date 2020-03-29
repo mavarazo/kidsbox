@@ -2,13 +2,12 @@
 # -*- coding: utf8 -*-
 
 
-import RPi.GPIO as GPIO
 import logging
-import requests
-import signal
 import time
+import requests
+import RPi.GPIO as GPIO
+from mfrc522 import SimpleMFRC522
 
-import MFRC522
 
 # Logging
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -47,49 +46,25 @@ def play_by_uid(uid):
     elif r.status_code == 404:
         return False
 
-continue_reading = True
 
+reader = SimpleMFRC522()
 
-# Capture SIGINT for cleanup when the script is aborted
-def end_read(signal, frame):
-    global continue_reading
-    print "Ctrl+C captured, ending read."
-    continue_reading = False
-    GPIO.cleanup()
-
-
-# Hook the SIGINT
-signal.signal(signal.SIGINT, end_read)
-
-# Create an object of the class MFRC522
-MIFAREReader = MFRC522.MFRC522()
-
-# This loop keeps checking for chips. If one is near it will get the UID and authenticate
-while continue_reading:
-
-    # Scan for cards
-    (status, TagType) = MIFAREReader.MFRC522_Request(MIFAREReader.PICC_REQIDL)
-
-    # If a card is found
-    if status == MIFAREReader.MI_OK:
-        logging.info("Card detected")
-
-    # Get the UID of the card
-    (status, uid) = MIFAREReader.MFRC522_Anticoll()
-
-    # If we have the UID, continue
-    if status == MIFAREReader.MI_OK:
-        uid_str = values = ':'.join(str(v) for v in uid)
-
-        # Print UID
-        logging.info("Card read UID: " + uid_str)
+try:
+    logging.info(f"kidsbox-daemon startup")
+    while True:
+        id, text = reader.read()
+        logging.info(f"Card read {id}, {text}")
 
         try:
-            if tag_with_uid_registered(uid_str):
-                play_by_uid(uid_str)
+            str_id = str(id)
+            if tag_with_uid_registered(str_id):
+                play_by_uid(str_id)
                 time.sleep(10)
             else:
-                create_tag(uid_str)
+                create_tag(str_id)
                 time.sleep(10)
         except Exception as e:
             logging.error(e)
+finally:
+    logging.info(f"kidsbox-daemon shutdown")
+    GPIO.cleanup()
