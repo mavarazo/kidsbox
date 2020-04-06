@@ -1,7 +1,7 @@
 import os
 
 from flask import render_template, flash, url_for, current_app
-from werkzeug.utils import redirect
+from werkzeug.utils import redirect, secure_filename
 
 from app import db
 from app.models import Tag
@@ -33,11 +33,23 @@ def edit(id):
         if form.submit.data:
             tag.name = form.name.data
             tag.path = form.path.data
+    
+            artwork = form.artwork.data
+            if artwork and allowed_file(artwork.filename):
+                filename = secure_filename(artwork.filename)
+                artwork.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
+                tag.artwork = filename
+        
             db.session.commit()
             flash('Your changes have been saved.')
         return redirect(url_for('tags.index'))
 
     return render_template('tags/edit.html', title='Tags', form=form)
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
 
 
 @bp.route('/tags/<int:id>/delete', methods=['GET'])

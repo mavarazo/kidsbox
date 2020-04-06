@@ -22,24 +22,30 @@
     </div>
 </div>
 
-<table class="table table-hover">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for tag in tags %}
-    <tr>
-        <td>{{ tag.name or '' }}</td>
-        <td><a class="btn btn-primary play" href="#" data-tag="{{ tag.uid }}">
-            <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
-        </a></td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<div class="columnwrapper">
+    <div class="row">
+    {%- for slice in tags|slice(3) %}
+        {%- for tag in slice %}
+        <div class="col-sm-4 col-md-3">
+            <div class="thumbnail" style="height:200px">
+                {%- if tag.artwork -%}
+                <a class="play" href="#" data-tag="{{ tag.uid }}">
+                    <img src="{{ url_for('main.uploaded_file', filename=tag.artwork) }}" alt="{{ tag.name }}" style="height:180px"/>
+                </a>
+                {%- else %}
+                <div class="caption text-center">
+                    <h3>{{ tag.name }}</h3>
+                    <a class="btn btn-primary play" href="#" data-tag="{{ tag.uid }}">
+                        <span class="glyphicon glyphicon-play" aria-hidden="true"></span>
+                    </a>
+                </div>
+                {%- endif %}
+            </div>
+        </div>    
+        {%- endfor %}
+        {%- endfor %}
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

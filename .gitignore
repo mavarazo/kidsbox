@@ -2,7 +2,9 @@
 app.db
 logs/
 migrations/
-Kinderlieder/
+music/
+uploads/
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
