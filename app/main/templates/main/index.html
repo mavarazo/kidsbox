@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block app_content %}
+<div class="row mt-2 mb-2 justify-content-center">
+    <div class="col">
+        <div class="card text-center border-0 shadow">
+            <div class="card-body text-center">
+                <a class="btn btn-primary btn-lg" onclick="toggle_play_pause()" href="javascript:void(0)">
+                    <span id="play-pause-icon" class="fa fa-pause-circle" aria-hidden="true"></span>
+                </a>
+                <audio id="mediaplayer" autoplay="" loop="">
+                    {% if selected_album is defined %}
+                    {% for track in selected_album.tracks %}
+                    <source
+                        src="{{ url_for('main.get_file_from_music_folder', albumname=selected_album.name, filename=track.name) }}"
+                        type="audio/mpeg">
+                    {% endfor %}
+                    {% endif %}
+                </audio>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row text-center text-lg-left">
+    {% for album in albums %}
+    <div class="col-lg-3 col-md-4 col-6">
+        <div class="card mb-2 border-0 shadow">
+            <a href="{{ url_for('main.index', albumname=album.name) }}" class="d-block h-100">
+                {% if album.artwork is not none %}
+                <img class="img-fluid img-thumbnail"
+                    src="{{ url_for('main.get_file_from_music_folder', albumname=album.name, filename=album.artwork) }}"
+                    alt="">
+                {% endif %}
+            </a>
+            <div class="card-body text-center">
+                <h5 class="card-title mb-0 text-truncate"><a href="{{ url_for('main.index', albumname=album.name) }}">{{ album.name }}</a></h5>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block additionalscripts %}
+<script>
+    function toggle_play_pause() {
+        var mediaplayer = document.getElementById("mediaplayer");
+        if (mediaplayer.paused) {
+            mediaplayer.play();
+
+            $("#play-pause-icon").removeClass("fa fa-play-circle");
+            $("#play-pause-icon").addClass("fa fa-pause-circle");
+        } else {
+            mediaplayer.pause();
+
+            $("#play-pause-icon").removeClass("fa fa-pause-circle");
+            $("#play-pause-icon").addClass("fa fa-play-circle");
+        }
+    }
+
+    function play() {
+        var mediaplayer = document.getElementById("mediaplayer");
+        mediaplayer.play();
+    }
+
+    function pause() {
+        var mediaplayer = document.getElementById("mediaplayer");
+        mediaplayer.pause();
+    }
+</script>
+{% endblock %}

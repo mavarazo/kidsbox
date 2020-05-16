@@ -3,18 +3,16 @@ import os
 from logging.handlers import RotatingFileHandler
 
 from flask import Flask
-from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from mpd import MPDClient
 
-from config import Config
+from config_kidsbox import Config
 
 
 db = SQLAlchemy()
 migrate = Migrate()
-bootstrap = Bootstrap()
 ma = Marshmallow()
 mpd = MPDClient()
 
@@ -25,7 +23,6 @@ def create_app(config_class=Config):
 
     db.init_app(app)
     migrate.init_app(app, db)
-    bootstrap.init_app(app)
     ma.init_app(app)
 
     mpd.timeout = 10
