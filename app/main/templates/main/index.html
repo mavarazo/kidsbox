@@ -8,7 +8,7 @@
                 <a class="btn btn-primary btn-lg" onclick="toggle_play_pause()" href="javascript:void(0)">
                     <span id="play-pause-icon" class="fa fa-pause-circle" aria-hidden="true"></span>
                 </a>
-                <audio id="mediaplayer" autoplay="" loop="">
+                <audio id="mediaplayer" autoplay="">
                     {% if selected_album is defined %}
                     {% for track in selected_album.tracks %}
                     <source
